@@ -1,5 +1,6 @@
 import yfinance as yf
-
+BOT_TOKEN = "8025462243:AAHJjDknO0rSKY493vFJMz9LVPBHB0KP1dw"
+CHAT_ID = "5270296136"
 symbols = [
     "BTC-USD",
     "ETH-USD",
@@ -60,3 +61,29 @@ else:
     for r in results:
 
         print(r)
+# =========================
+# TELEGRAM ALERT
+# =========================
+
+message = "🔥 Bullish CRT Coins 🔥\n\n"
+
+if len(results) == 0:
+
+    message += "No bullish CRT setups today."
+
+else:
+
+    for r in results:
+
+        message += f"{r}\n"
+
+telegram_url = f"https://api.telegram.org/bot{BOT_TOKEN}/sendMessage"
+
+payload = {
+    "chat_id": CHAT_ID,
+    "text": message
+}
+
+requests.post(telegram_url, data=payload)
+
+print("\nTelegram alert sent.")
