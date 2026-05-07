@@ -1,9 +1,5 @@
-
 import requests
-
-# =========================
-# SETTINGS
-# =========================
+import json
 
 allowed_symbols = [
     'BTCUSDT',
@@ -21,10 +17,6 @@ allowed_symbols = [
 
 results = []
 
-# =========================
-# MAIN LOOP
-# =========================
-
 for symbol in allowed_symbols:
 
     try:
@@ -38,11 +30,20 @@ for symbol in allowed_symbols:
             "limit": 3
         }
 
-        response = requests.get(url, params=params, timeout=10)
+        response = requests.get(
+            url,
+            params=params,
+            timeout=10,
+            headers={
+                "User-Agent": "Mozilla/5.0"
+            }
+        )
 
-        data = response.json()
+        # Convert safely
+        data = json.loads(response.text)
 
         if 'result' not in data:
+            print(f"No result for {symbol}")
             continue
 
         candles = data['result']['list']
@@ -50,12 +51,9 @@ for symbol in allowed_symbols:
         if len(candles) < 3:
             continue
 
-        # Bybit returns newest first
+        # Bybit newest candle first
         yest = candles[1]
         prev = candles[2]
-
-        # Candle format:
-        # [timestamp, open, high, low, close, volume, turnover]
 
         low_1 = float(yest[3])
         close_1 = float(yest[4])
@@ -70,10 +68,6 @@ for symbol in allowed_symbols:
     except Exception as e:
 
         print(f"Error with {symbol}: {e}")
-
-# =========================
-# OUTPUT
-# =========================
 
 print("\n🔥 Bullish CRT Coins 🔥\n")
 
