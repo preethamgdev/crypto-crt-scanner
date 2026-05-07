@@ -35,10 +35,10 @@ for symbol in symbols:
         # Previous candle
         prev = df.iloc[-3]
 
-        low_1 = float(yest["Low"])
-        close_1 = float(yest["Close"])
+        low_1 = yest["Low"].item()
+        close_1 = yest["Close"].item()
 
-        low_2 = float(prev["Low"])
+        low_2 = prev["Low"].item()
 
         # Bullish CRT
         if low_1 < low_2 and close_1 > low_2:
