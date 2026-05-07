@@ -1,7 +1,6 @@
 import requests
-import json
 
-allowed_symbols = [
+symbols = [
     'BTCUSDT',
     'ETHUSDT',
     'SOLUSDT',
@@ -11,54 +10,40 @@ allowed_symbols = [
     'LINKUSDT',
     'AVAXUSDT',
     'ADAUSDT',
-    'WIFUSDT',
-    '1000PEPEUSDT'
+    'WIFUSDT'
 ]
 
 results = []
 
-for symbol in allowed_symbols:
+for symbol in symbols:
 
     try:
 
-        url = "https://api.bybit.com/v5/market/kline"
-
-        params = {
-            "category": "linear",
-            "symbol": symbol,
-            "interval": "D",
-            "limit": 3
-        }
+        url = f"https://api.binance.com/api/v3/klines?symbol={symbol}&interval=1d&limit=3"
 
         response = requests.get(
             url,
-            params=params,
             timeout=10,
             headers={
                 "User-Agent": "Mozilla/5.0"
             }
         )
 
-        # Convert safely
-        data = json.loads(response.text)
+        data = response.json()
 
-        if 'result' not in data:
-            print(f"No result for {symbol}")
+        if not isinstance(data, list):
+            print(f"Invalid response for {symbol}")
             continue
 
-        candles = data['result']['list']
-
-        if len(candles) < 3:
+        if len(data) < 3:
             continue
 
-        # Bybit newest candle first
-        yest = candles[1]
-        prev = candles[2]
-
-        low_1 = float(yest[3])
-        close_1 = float(yest[4])
+        prev = data[-3]
+        yest = data[-2]
 
         low_2 = float(prev[3])
+        low_1 = float(yest[3])
+        close_1 = float(yest[4])
 
         # Bullish CRT
         if low_1 < low_2 and close_1 > low_2:
