@@ -1,16 +1,15 @@
-import requests
+import yfinance as yf
 
 symbols = [
-    'BTCUSDT',
-    'ETHUSDT',
-    'SOLUSDT',
-    'XRPUSDT',
-    'DOGEUSDT',
-    'SUIUSDT',
-    'LINKUSDT',
-    'AVAXUSDT',
-    'ADAUSDT',
-    'WIFUSDT'
+    "BTC-USD",
+    "ETH-USD",
+    "SOL-USD",
+    "XRP-USD",
+    "DOGE-USD",
+    "SUI20947-USD",
+    "LINK-USD",
+    "AVAX-USD",
+    "ADA-USD"
 ]
 
 results = []
@@ -19,31 +18,27 @@ for symbol in symbols:
 
     try:
 
-        url = f"https://api.binance.com/api/v3/klines?symbol={symbol}&interval=1d&limit=3"
-
-        response = requests.get(
-            url,
-            timeout=10,
-            headers={
-                "User-Agent": "Mozilla/5.0"
-            }
+        df = yf.download(
+            symbol,
+            period="7d",
+            interval="1d",
+            progress=False,
+            auto_adjust=False
         )
 
-        data = response.json()
-
-        if not isinstance(data, list):
-            print(f"Invalid response for {symbol}")
+        if len(df) < 3:
             continue
 
-        if len(data) < 3:
-            continue
+        # Yesterday candle
+        yest = df.iloc[-2]
 
-        prev = data[-3]
-        yest = data[-2]
+        # Previous candle
+        prev = df.iloc[-3]
 
-        low_2 = float(prev[3])
-        low_1 = float(yest[3])
-        close_1 = float(yest[4])
+        low_1 = float(yest["Low"])
+        close_1 = float(yest["Close"])
+
+        low_2 = float(prev["Low"])
 
         # Bullish CRT
         if low_1 < low_2 and close_1 > low_2:
