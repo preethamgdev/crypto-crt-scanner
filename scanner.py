@@ -1,4 +1,5 @@
 import yfinance as yf
+import requests
 BOT_TOKEN = "8025462243:AAHJjDknO0rSKY493vFJMz9LVPBHB0KP1dw"
 CHAT_ID = "5270296136"
 symbols = [
