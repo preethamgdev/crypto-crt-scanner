@@ -18,8 +18,8 @@ jobs:
         with:
           python-version: '3.11'
 
-      - name: Install requests
-        run: pip install requests
+      - name: Install dependencies
+        run: pip install yfinance pandas
 
       - name: Run scanner
         run: python scanner.py
